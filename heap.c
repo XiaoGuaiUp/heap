@@ -83,6 +83,51 @@ int HeapRoot(Heap* heap,HeapType* value)
     return 1;
 }
 
+//下沉操作
+void AdjustDown(Heap* heap,size_t index)
+{
+    size_t parent=index;
+    size_t child=2*index+1;
+    while(child<heap->size)
+    {
+        if(((child+1)<heap->size) && heap->cmp(heap->data[child+1],heap->data[child]))
+        {
+            child=child+1;
+        }
+        //指向子树中更小的一个
+        if(heap->cmp(heap->data[child],heap->data[parent]))
+        {
+            Swap(&heap->data[child],&heap->data[parent]);
+        }
+        else
+        {
+            break;
+        }
+        parent=child;
+        child=2*parent+1;
+    }
+
+}
+
+//删除堆顶元素
+void HeapErase(Heap* heap)
+{
+    if(heap==NULL)
+    {
+        return;
+    }
+    if(heap->size==0)
+    {
+        //空堆
+        return;
+    }
+    //交换堆顶元素和最后一个元素
+    Swap(&heap->data[0],&heap->data[heap->size-1]);
+    //进行层删
+    --heap->size;
+    //从根节点出发，进行下沉调整
+    AdjustDown(heap,heap->data[0]);
+}
 
 //////////////////////////////////////////////////////////////////
 //以下为测试函数
@@ -145,11 +190,34 @@ void TestRoot()
     printf("堆顶元素理论为a,实际为: %c\n",top);
 }
 
+//测试删除堆顶元素
+void TestErase()
+{
+    printf("============ %s ===========\n",__FUNCTION__);
+    Heap heap;
+    HeapInit(&heap,Greater);
+    HeapInsert(&heap,'b');
+    HeapInsert(&heap,'a');
+    HeapInsert(&heap,'c');
+    HeapInsert(&heap,'s');
+    HeapInsert(&heap,'e');
+    HeapPrintf(&heap,"插入五个值");
+    HeapType top;
+    int ret=HeapRoot(&heap,&top);
+    printf("ret 理论为1，实际为 %d\n",ret);
+    printf("堆顶元素理论为a,实际为: %c\n",top);
+    HeapErase(&heap);
+    printf("============ 删了堆顶元素 =========\n");
+    HeapPrintf(&heap,"删除堆顶元素");
+
+}
+
 int main()
 {
     TestInit();
     TestInsert();
     TestRoot();
+    TestErase();
 }
 
 
