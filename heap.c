@@ -1,5 +1,7 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+
 
 #include "heap.h"
 
@@ -126,7 +128,58 @@ void HeapErase(Heap* heap)
     //进行层删
     --heap->size;
     //从根节点出发，进行下沉调整
-    AdjustDown(heap,heap->data[0]);
+    AdjustDown(heap,0);
+}
+
+//创建一个堆
+void HeapCreate(Heap* heap,HeapType array[],size_t size)
+{
+    if(heap==NULL)
+    {
+        return;
+    }
+    //遍历数组，依次插入堆中
+    size_t i=0;
+    for(;i<size;++i)
+    {
+        HeapInsert(heap,array[i]);
+        return;
+    }
+}
+
+int Greater(HeapType a,HeapType b);
+void HeapPrintf(Heap* heap,const char* msg);
+//堆排序  假设升序，大堆
+void HeapSort(HeapType array[],size_t size)
+{
+    //先把这个数组构建成一个堆
+    Heap heap;
+    HeapInit(&heap,Greater);
+    int i=0;
+    for(;i<size;i++)
+    {
+        HeapInsert(&heap,array[i]);
+    }
+    //循环
+    if(heap.size==0)
+    {
+        return;
+    }
+    else
+    {
+        while(heap.size)
+        {
+            HeapErase(&heap);
+        }
+    }
+    while(heap.size>0)
+    {
+        HeapErase(&heap);
+    }
+    //循环结束，堆排完成
+    Heap new_heap=heap;
+    new_heap.size=size;
+    HeapPrintf(&new_heap,"堆排序");
 }
 
 //////////////////////////////////////////////////////////////////
@@ -212,12 +265,72 @@ void TestErase()
 
 }
 
+//测试创建一个堆
+void TestCreat()
+{
+    printf("============ %s ===========\n",__FUNCTION__);
+    Heap heap;
+    HeapInit(&heap,Greater);
+    HeapType array[]={'a','e','r','f','d','o','p'};
+    HeapCreate(&heap,array,7);
+    HeapPrintf(&heap,"构建了一个大堆");
+}
+
+//测试堆排序
+void TestSort()
+{
+    printf("============ %s ===========\n",__FUNCTION__);
+    HeapType array[]={1,2,4,3,9};
+    HeapSort(array,sizeof(array)/sizeof(array[0]));
+    printf("\n");
+    return;
+}
+
+//
+void TestSort2()
+{
+    //先把这个数组构建成一个堆
+    Heap heap;
+    HeapInit(&heap,Greater);
+    HeapType array[]={1,2,4,3,9};
+    size_t size=sizeof(array)/sizeof(array[0]);
+    int i=0;
+    for(;i<size;i++)
+    {
+        HeapInsert(&heap,array[i]);
+    }
+    //循环
+    if(heap.size==0)
+    {
+        return;
+    }
+    else
+    {
+        while(heap.size)
+        {
+            HeapErase(&heap);
+        }
+    }
+    while(heap.size>0)
+    {
+        HeapErase(&heap);
+    }
+    //循环结束，堆排完成
+    Heap new_heap=heap;
+    new_heap.size=size;
+    HeapPrintf(&new_heap,"堆排序");
+
+}
+
 int main()
 {
     TestInit();
     TestInsert();
     TestRoot();
     TestErase();
+    TestCreat();
+    TestSort();
+    TestSort2();
 }
 
 

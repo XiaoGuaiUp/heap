@@ -18,5 +18,10 @@ void HeapDestroy(Heap* heap);
 void HeapInsert(Heap* heap,HeapType value);
 //取堆顶元素
 int HeapRoot(Heap* heap,HeapType* value);
-
+//删除堆顶元素
+void HeapErase(Heap* heap);
+//创建一个堆
+void HeapCreate(Heap* heap,HeapType array[],size_t size);
+//堆排序  假设升序，大堆
+void HeapSort(HeapType array[],size_t size);
 
